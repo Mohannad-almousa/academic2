@@ -15,7 +15,6 @@
     <aside class="auth-left">
       <div class="auth-left-top">
         <div class="auth-logo-mini">Research Quest</div>
-        
       </div>
 
       <div class="auth-left-center">
@@ -78,7 +77,17 @@
   <script type="module">
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+    import { 
+      getAuth, 
+      createUserWithEmailAndPassword 
+    } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+
+    import { 
+      getFirestore, 
+      doc, 
+      setDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBS6WZ13DKVvbdddE-azZrI2FuBrSe39u0",
@@ -91,11 +100,12 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
 
     const btn = document.querySelector(".login_btn");
     const message = document.querySelector(".message_box");
 
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", async () => {
 
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value.trim();
@@ -118,30 +128,41 @@
         return;
       }
 
-      createUserWithEmailAndPassword(auth, email, password)
-        .then(() => {
-          message.textContent = "Account created!";
-          message.classList.add("created");
-          message.style.display = "block";
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
 
-          setTimeout(() => {
-            window.location.href = "login.html";
-          }, 1200);
-        })
-        .catch((error) => {
-          message.classList.add("error");
-
-          if (error.code === "auth/email-already-in-use")
-            message.textContent = "Email already registered!";
-          else if (error.code === "auth/invalid-email")
-            message.textContent = "Invalid email format!";
-          else if (error.code === "auth/weak-password")
-            message.textContent = "Password should be at least 6 characters!";
-          else
-            message.textContent = error.message;
-
-          message.style.display = "block";
+        // 🔥 إنشاء وثيقة داخل users باستخدام UID
+        await setDoc(doc(db, "users", user.uid), {
+          email: user.email,
+          name: "",
+          createdAt: serverTimestamp(),
+          lastLogin: serverTimestamp()
         });
+
+        message.textContent = "Account created!";
+        message.classList.add("created");
+        message.style.display = "block";
+
+        setTimeout(() => {
+          window.location.href = "login.html";
+        }, 1200);
+
+      } catch (error) {
+        message.classList.add("error");
+
+        if (error.code === "auth/email-already-in-use")
+          message.textContent = "Email already registered!";
+        else if (error.code === "auth/invalid-email")
+          message.textContent = "Invalid email format!";
+        else if (error.code === "auth/weak-password")
+          message.textContent = "Password should be at least 6 characters!";
+        else
+          message.textContent = error.message;
+
+        message.style.display = "block";
+      }
+
     });
 
   </script>
