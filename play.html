@@ -121,7 +121,7 @@
     document.body.appendChild(script);
   </script>
 
-  <!-- RECEIVE DATA FROM UNITY (BRIDGE) -->
+  <!-- RECEIVE DATA FROM UNITY -->
   <script>
     window.receiveLessonData = function (lessonID, score, errors, timeSpent) {
       console.log("🟢 Unity → Web Data Received");
@@ -130,20 +130,25 @@
       console.log("Errors:", errors);
       console.log("Time Spent:", timeSpent);
 
-      // Call Firebase save function
       saveProgressToFirebase(lessonID, score, errors, timeSpent);
     };
   </script>
 
   <!-- FIREBASE INTEGRATION -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
-    import { getAuth } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
-    // -----------------------------
-    // YOUR FIREBASE CONFIG
-    // -----------------------------
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { 
+      getFirestore, 
+      doc, 
+      setDoc 
+    } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+    import { 
+      getAuth 
+    } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+
+    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyBS6WZ13DKVvbdddE-azZrI2FuBrSe39u0",
       authDomain: "login-1aba2.firebaseapp.com",
@@ -153,40 +158,37 @@
       appId: "1:393759404087:web:9581fde1afb9ca81decfb2"
     };
 
-    // Initialize Firebase
+    // Init Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    // -----------------------------
-    // SAVE SESSION TO FIREBASE
-    // -----------------------------
+    // SAVE PROGRESS TO FIREBASE
     window.saveProgressToFirebase = async function (lessonID, score, errors, timeSpent) {
+
       const user = auth.currentUser;
 
       if (!user) {
-        console.error("❌ No logged user — cannot save session!");
-        alert("You must be logged in before playing.");
+        alert("You must be logged in to save your progress!");
         return;
       }
 
+      const progressRef = doc(db, "progress", user.uid);
+
       try {
-        const docRef = await addDoc(collection(db, "Session"), {
-          student_id: user.uid,
-          lesson_id: lessonID,
-          score: Number(score),
-          error_count: Number(errors),
-          duration_sec: Number(timeSpent),
-          device: "WebGL_Browser",
-          started_at: serverTimestamp(),
-          ended_at: serverTimestamp()
-        });
+        await setDoc(progressRef, {
+          [lessonID]: {
+            score: Number(score),
+            errors: Number(errors),
+            timeSpent: Number(timeSpent),
+            updatedAt: new Date()
+          }
+        }, { merge: true });
 
-        console.log("✅ Session saved with ID:", docRef.id);
-        alert("✔ Lesson Completed! Score saved.");
+        console.log("✅ Progress saved to Firestore!");
 
-      } catch (e) {
-        console.error("❌ Error saving session:", e);
+      } catch (error) {
+        console.error("❌ Error saving progress:", error);
       }
     };
   </script>
