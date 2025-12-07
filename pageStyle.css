@@ -66,15 +66,12 @@ body {
 }
 
 /* ===========================
-   MAIN CONTAINER
+   HOME PAGE & MODULES
 =========================== */
 .container {
   padding: 40px 60px;
 }
 
-/* ===========================
-   HERO SECTION
-=========================== */
 .card.hero {
   display: flex;
   justify-content: space-between;
@@ -124,9 +121,6 @@ body {
   color: #4d8bff;
 }
 
-/* ===========================
-   SECTIONS
-=========================== */
 .section {
   margin-bottom: 60px;
 }
@@ -142,18 +136,12 @@ body {
   margin-bottom: 20px;
 }
 
-/* ===========================
-   GRID
-=========================== */
 .grid-3 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 25px;
 }
 
-/* ===========================
-   MODULE CARDS
-=========================== */
 .module-card,
 .hiw-card,
 .level-card {
@@ -242,127 +230,266 @@ body {
   opacity: 0.7;
 }
 
-/* ===========================
-   AUTH PAGES (Login / Register)
-=========================== */
+/* =========================================================
+   LOGIN / REGISTER — FINAL DESIGN (Compatible with your HTML)
+=========================================================== */
 
+/* PAGE BACKGROUND */
 .auth-body {
-  background: #f4f4f4;
+  background: #fbf9f4;
 }
 
+/* MAIN LAYOUT */
 .auth-shell {
   display: flex;
   height: 100vh;
+  padding: 40px;
+  gap: 40px;
 }
 
+/* LEFT SIDE */
 .auth-left {
-  background: #ddd;
-  width: 40%;
+  width: 45%;
+  background: #dcdcdc;
+  border-radius: 20px;
   padding: 40px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
+.auth-logo-mini {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+/* RIGHT SIDE */
 .auth-right {
-  background: white;
-  width: 60%;
-  padding: 60px;
+  width: 45%;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 50px 60px;
 }
 
-.auth-header-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-}
-
+/* TITLE */
 .auth-title-wrap h1 {
-  font-size: 30px;
-  margin-bottom: 5px;
+  font-size: 28px;
 }
 
+.login_title {
+  font-size: 14px;
+  opacity: 0.7;
+  margin-top: 5px;
+}
+
+/* TABS */
 .auth-tabs {
   display: flex;
-  gap: 20px;
+  gap: 10px;
+  background: #ece9ff;
+  padding: 4px;
+  border-radius: 20px;
+  width: 55%;
+  justify-content: space-between;
 }
 
 .auth-tab,
 .auth-tab-active {
-  font-size: 15px;
+  padding: 6px 20px;
+  border-radius: 20px;
+  font-size: 14px;
   cursor: pointer;
-  text-decoration: none;
 }
 
 .auth-tab {
-  color: #777;
+  color: #757575;
+  text-decoration: none;
 }
 
 .auth-tab-active {
-  color: #4d8bff;
-  font-weight: bold;
+  background: #bfc6ff;
+  color: #000;
 }
 
+/* INPUTS */
 .input_box {
-  background: #f4f4f4;
-  padding: 12px;
+  background: #0d1a33;
+  padding: 12px 15px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
-  border-radius: 10px;
   margin-top: 20px;
 }
 
+.input_box i {
+  color: white;
+  font-size: 16px;
+}
+
 .input_box input {
-  border: none;
-  outline: none;
+  width: 100%;
   margin-left: 10px;
   background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-size: 15px;
 }
 
+/* LINKS */
+.remember_forget_box {
+  margin-top: 10px;
+}
+
+.remember_forget_box a {
+  font-size: 13px;
+  color: #4d8bff;
+}
+
+/* BUTTON */
 .login_btn {
   width: 100%;
-  margin-top: 25px;
+  margin-top: 20px;
   padding: 12px;
-  background: #4d8bff;
-  color: white;
-  cursor: pointer;
   border-radius: 10px;
   border: none;
+  background: #4d8bff;
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
 }
 
+/* REGISTER TEXT */
+.register {
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.register a {
+  color: #4d8bff;
+}
+
+/* MESSAGE BOXES */
 .message_box {
   margin-top: 15px;
-  padding: 10px;
-  border-radius: 8px;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 14px;
   display: none;
 }
 
 .message_box.error {
-  background: #ffcccc;
-  color: #b10000;
+  background: #ffd6d6;
+  color: #900000;
 }
 
 .message_box.created {
-  background: #ccffcc;
+  background: #d8ffd6;
   color: #006600;
 }
 
-/* ===========================
-   DASHBOARD CARDS
-=========================== */
-.dash-card {
-  background: white;
-  padding: 20px;
+/* ==========================================
+   REGISTER PAGE — FINAL STYLING
+   Matches the layout of the second image
+========================================== */
+
+/* Title alignment like the design */
+.auth-title-wrap h1 {
+  font-size: 28px;
+  margin-bottom: 5px;
+}
+
+/* Tabs container like picture */
+.auth-tabs {
+  background: #ece9ff;
+  padding: 4px;
+  border-radius: 20px;
+  width: 55%;
+  justify-content: space-between;
+  display: flex;
+  margin-top: 10px;
+  margin-bottom: 25px;
+}
+
+/* Active tab */
+.auth-tab-active {
+  background: #bfc6ff;
+  padding: 6px 20px;
+  border-radius: 20px;
+  color: #000 !important;
+}
+
+/* Register fields dark style */
+.auth-right .input_box {
+  background: #0d1a33;
+  padding: 13px 15px;
   border-radius: 12px;
-  text-align: center;
-  border: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  margin-top: 15px;
 }
 
-.dash-card h3 {
+.auth-right .input_box input {
+  background: transparent;
+  color: white;
+  margin-left: 10px;
+  border: none;
+  outline: none;
+}
+
+/* Icons inside field */
+.auth-right .input_box i {
+  color: white;
   font-size: 18px;
-  margin-bottom: 10px;
 }
 
-/* ===========================
-   END
-=========================== */
+/* MAIN button style (Create Account) */
+.auth-right .login_btn {
+  width: 60%;
+  border-radius: 12px;
+  margin: 25px auto 10px auto;
+  display: block;
+  background: #dcdcdc;
+  color: #111;
+  font-weight: bold;
+}
 
+/* Divider styling for Register */
+.auth-right .divider {
+  display: flex;
+  align-items: center;
+  margin: 25px 0;
+  color: #999;
+  font-size: 14px;
+}
+
+.auth-right .divider span {
+  flex: 1;
+  height: 1px;
+  background: #ddd;
+}
+
+/* Google login button centered */
+.google-btn {
+  width: 170px;
+  margin: 0 auto;
+  cursor: pointer;
+}
+
+.google-btn img {
+  width: 100%;
+}
+
+/* Bottom text "Already have an account?" */
+.bottom-text,
+.register {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+/* Remove blue text highlight inside inputs */
+input::selection {
+  background: transparent;
+  color: inherit;
+}
