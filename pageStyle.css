@@ -1,0 +1,368 @@
+/* ===========================
+   GLOBAL
+=========================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #f4f4f4;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #222;
+}
+
+/* ===========================
+   NAVBAR
+=========================== */
+.topbar {
+  background: #111;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+}
+
+.topbar .logo {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav a {
+  color: white;
+  text-decoration: none;
+  font-size: 15px;
+  padding-bottom: 3px;
+}
+
+.nav a.active,
+.nav a:hover {
+  border-bottom: 2px solid #4d8bff;
+}
+
+.logout {
+  margin-left: 20px;
+  background: #d9534f;
+  border: none;
+  padding: 6px 15px;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+}
+
+.user-chip {
+  margin-left: 15px;
+  padding: 4px 10px;
+  background: #4d8bff;
+  border-radius: 5px;
+}
+
+/* ===========================
+   MAIN CONTAINER
+=========================== */
+.container {
+  padding: 40px 60px;
+}
+
+/* ===========================
+   HERO SECTION
+=========================== */
+.card.hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  margin-bottom: 40px;
+}
+
+.hero-text h1 {
+  font-size: 36px;
+  font-weight: bold;
+}
+
+.hero-text h1 span {
+  display: block;
+  font-size: 22px;
+  color: #4d8bff;
+}
+
+.hero-text p {
+  margin: 15px 0;
+  font-size: 15px;
+  max-width: 400px;
+  line-height: 1.5;
+}
+
+.hero-actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 15px;
+}
+
+.btn {
+  padding: 10px 20px;
+  background: #4d8bff;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 2px solid #4d8bff;
+  color: #4d8bff;
+}
+
+/* ===========================
+   SECTIONS
+=========================== */
+.section {
+  margin-bottom: 60px;
+}
+
+.section-title {
+  font-size: 28px;
+  margin-bottom: 5px;
+}
+
+.section-subtitle {
+  font-size: 14px;
+  opacity: 0.7;
+  margin-bottom: 20px;
+}
+
+/* ===========================
+   GRID
+=========================== */
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+}
+
+/* ===========================
+   MODULE CARDS
+=========================== */
+.module-card,
+.hiw-card,
+.level-card {
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  border: 1px solid #ddd;
+}
+
+.hiw-card-icon {
+  width: 35px;
+  height: 35px;
+  background: #4d8bff;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.level-label {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.level-list {
+  padding-left: 20px;
+  margin-top: 10px;
+}
+
+.level-list li {
+  margin-bottom: 5px;
+}
+
+/* ===========================
+   CTA
+=========================== */
+.cta-band {
+  background: #4d8bff;
+  color: white;
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+}
+
+.cta-band .btn {
+  background: white;
+  color: #4d8bff;
+  margin-top: 15px;
+}
+
+/* ===========================
+   FOOTER
+=========================== */
+.footer {
+  margin-top: 50px;
+  padding: 40px;
+  background: #111;
+  color: white;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 25px;
+}
+
+.footer-col-title {
+  font-size: 17px;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.footer ul li {
+  list-style: none;
+  margin-bottom: 6px;
+  opacity: 0.8;
+}
+
+.footer-bottom {
+  margin-top: 30px;
+  text-align: center;
+  opacity: 0.7;
+}
+
+/* ===========================
+   AUTH PAGES (Login / Register)
+=========================== */
+
+.auth-body {
+  background: #f4f4f4;
+}
+
+.auth-shell {
+  display: flex;
+  height: 100vh;
+}
+
+.auth-left {
+  background: #ddd;
+  width: 40%;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.auth-right {
+  background: white;
+  width: 60%;
+  padding: 60px;
+}
+
+.auth-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.auth-title-wrap h1 {
+  font-size: 30px;
+  margin-bottom: 5px;
+}
+
+.auth-tabs {
+  display: flex;
+  gap: 20px;
+}
+
+.auth-tab,
+.auth-tab-active {
+  font-size: 15px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.auth-tab {
+  color: #777;
+}
+
+.auth-tab-active {
+  color: #4d8bff;
+  font-weight: bold;
+}
+
+.input_box {
+  background: #f4f4f4;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  border-radius: 10px;
+  margin-top: 20px;
+}
+
+.input_box input {
+  border: none;
+  outline: none;
+  margin-left: 10px;
+  background: transparent;
+}
+
+.login_btn {
+  width: 100%;
+  margin-top: 25px;
+  padding: 12px;
+  background: #4d8bff;
+  color: white;
+  cursor: pointer;
+  border-radius: 10px;
+  border: none;
+}
+
+.message_box {
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 8px;
+  display: none;
+}
+
+.message_box.error {
+  background: #ffcccc;
+  color: #b10000;
+}
+
+.message_box.created {
+  background: #ccffcc;
+  color: #006600;
+}
+
+/* ===========================
+   DASHBOARD CARDS
+=========================== */
+.dash-card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+.dash-card h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+/* ===========================
+   END
+=========================== */
+

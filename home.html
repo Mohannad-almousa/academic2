@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Research Quest • Home</title>
+  <link rel="stylesheet" href="pageStyle.css"/>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <header class="topbar">
+    <div class="logo">Research Quest</div>
+    <nav class="nav">
+      <a href="home.html" class="active">Home</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="modules.html">Modules</a>
+      <a href="chatbot.html">ChatBot</a>
+      
+      <button class="logout" id="btnLogout">Logout</button>
+      <span class="user-chip" id="userChip">...</span>
+    </nav>
+  </header>
+
+  <main class="container">
+
+    <!-- HERO -->
+    <section class="section">
+      <div class="card hero">
+
+        <div class="hero-text">
+          <h1>WELCOME
+            <span>To Research Quest Platform</span>
+          </h1>
+
+          <p>
+            Master scientific research concepts through interactive Unity-based modules
+            and gamified progress tracking.
+          </p>
+
+          <div class="hero-actions">
+            <button class="btn" id="btnStart">Start</button>
+            <button class="btn btn-outline" id="btnPlay">Play Game</button>
+          </div>
+        </div>
+
+        <div class="hero-media">Photo</div>
+
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="section">
+      <h2 class="section-title">How It Works</h2>
+      <p class="section-subtitle">Three steps to master research concepts</p>
+
+      <div class="grid-3">
+
+        <article class="hiw-card">
+          <div class="hiw-card-icon">1</div>
+          <div class="hiw-card-title">Choose Module</div>
+          <p>Select modules covering core research skills.</p>
+        </article>
+
+        <article class="hiw-card">
+          <div class="hiw-card-icon">2</div>
+          <div class="hiw-card-title">Complete Challenges</div>
+          <p>Interactive Unity tasks and research quizzes.</p>
+        </article>
+
+        <article class="hiw-card">
+          <div class="hiw-card-icon">3</div>
+          <div class="hiw-card-title">Earn Rewards</div>
+          <p>Track your learning and unlock achievements.</p>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- LEVELS -->
+    <section class="section">
+      <h2 class="section-title">Learning Levels</h2>
+      <p class="section-subtitle">Progress through three structured levels</p>
+
+      <div class="grid-3">
+
+        <article class="level-card">
+          <div class="chip">icon</div>
+          <div class="level-label">Beginner</div>
+          <ul class="level-list">
+            <li>Research Fundamentals</li>
+            <li>Literature Search</li>
+            <li>Data Basics</li>
+          </ul>
+        </article>
+
+        <article class="level-card">
+          <div class="chip">icon</div>
+          <div class="level-label">Intermediate</div>
+          <ul class="level-list">
+            <li>Data Analysis</li>
+            <li>Experimental Design</li>
+            <li>Academic Writing</li>
+          </ul>
+        </article>
+
+        <article class="level-card">
+          <div class="chip">icon</div>
+          <div class="level-label">Advanced</div>
+          <ul class="level-list">
+            <li>Publication Strategy</li>
+            <li>Grant Writing</li>
+            <li>Advanced Methods</li>
+          </ul>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section">
+      <div class="cta-band">
+        <h2>Ready to Start?</h2>
+        <p>Join thousands learning research skills.</p>
+        <button class="btn" id="btnGetStarted">Get Started</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-grid">
+
+      <div>
+        <div class="footer-col-title">Research Quest</div>
+        <p class="text-muted">Gamified research learning.</p>
+      </div>
+
+      <div>
+        <div class="footer-col-title">Company</div>
+        <ul>
+          <li>About</li>
+          <li>Contact</li>
+          <li>Careers</li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="footer-col-title">Legal</div>
+        <ul>
+          <li>Privacy Policy</li>
+          <li>Terms</li>
+          <li>Cookies</li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="footer-col-title">Connect</div>
+        <ul>
+          <li>LinkedIn</li>
+          <li>Facebook</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      © 2025 Research Quest
+    </div>
+
+  </footer>
+
+
+  <!-- Firebase Auth -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBS6WZ13DKVvbdddE-azZrI2FuBrSe39u0",
+      authDomain: "login-1aba2.firebaseapp.com",
+      projectId: "login-1aba2",
+      storageBucket: "login-1aba2.appspot.com",
+      messagingSenderId: "393759404087",
+      appId: "1:393759404087:web:9581fde1afb9ca81decfb2"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const userChip = document.getElementById("userChip");
+    const btnLogout = document.getElementById("btnLogout");
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) window.location.href = "login.html";
+      else userChip.textContent = user.email;
+    });
+
+    btnLogout.onclick = async () => {
+      await signOut(auth);
+      window.location.href = "login.html";
+    };
+
+    // ⭐ زر "ابدأ"
+    document.getElementById("btnStart").onclick = () => {
+      window.location.href = "modules.html";
+    };
+
+    // ⭐ زر "العب الآن"
+    document.getElementById("btnPlay").onclick = () => {
+      window.location.href = "play.html";  // ✔ صحيح الآن
+    };
+
+    document.getElementById("btnGetStarted").onclick = () => {
+      window.location.href = "modules.html";
+    };
+  </script>
+
+</body>
+</html>

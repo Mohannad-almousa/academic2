@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Research Assistant</title>
+
+<style>
+
+/* GENERAL */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f4f4;
+}
+
+/* CHAT CONTAINER */
+.chat-wrapper {
+  width: 420px;
+  height: 90vh;
+  background: #e6e6e6;
+  margin: 20px auto;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid #ccc;
+}
+
+/* HEADER */
+.chat-header {
+  background: #111;
+  color: white;
+  padding: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chat-header-title {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.chat-header-sub {
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.close-btn {
+  cursor: pointer;
+  font-size: 22px;
+}
+
+/* MESSAGES */
+#chatBox {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+}
+
+.msg {
+  max-width: 80%;
+  padding: 12px;
+  border-radius: 15px;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+.msg.user {
+  background: #4d8bff;
+  color: white;
+  align-self: flex-end;
+}
+
+.msg.bot {
+  background: white;
+  align-self: flex-start;
+}
+
+/* INPUT */
+.input-area {
+  background: white;
+  padding: 12px;
+  display: flex;
+  gap: 10px;
+}
+
+#chatInput {
+  flex: 1;
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+}
+
+.send-btn {
+  background: #4d8bff;
+  color: white;
+  border: none;
+  padding: 0 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="chat-wrapper">
+
+  <!-- HEADER -->
+  <div class="chat-header">
+    <div>
+      <div class="chat-header-title">Research Assistant</div>
+      <div class="chat-header-sub">Always here to help</div>
+    </div>
+
+    <div class="close-btn" onclick="window.location.href='home.html'">×</div>
+  </div>
+
+  <!-- CHAT AREA -->
+  <div id="chatBox"></div>
+
+  <!-- INPUT -->
+  <div class="input-area">
+    <input type="text" id="chatInput" placeholder="Ask me anything...">
+    <button class="send-btn" onclick="sendMessage()">➤</button>
+  </div>
+
+</div>
+
+<script>
+/* API ENDPOINT */
+const API_URL = "https://your-n8n-app.onrender.com/webhook/chat";
+
+/* SEND MESSAGE */
+async function sendMessage() {
+    const input = document.getElementById("chatInput");
+    const message = input.value.trim();
+
+    if (!message) return;
+
+    addMessage(message, "user");
+    input.value = "";
+
+    try {
+        const res = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message })
+        });
+
+        const data = await res.json();
+
+        if (data.answer) {
+            addMessage(data.answer, "bot");
+        } else {
+            addMessage("⚠ Server error: No answer.", "bot");
+        }
+
+    } catch {
+        addMessage("⚠ Server offline.", "bot");
+    }
+}
+
+/* DISPLAY MESSAGE */
+function addMessage(text, sender) {
+    const box = document.getElementById("chatBox");
+    const msg = document.createElement("div");
+
+    msg.className = sender === "user" ? "msg user" : "msg bot";
+    msg.textContent = text;
+
+    box.appendChild(msg);
+    box.scrollTop = box.scrollHeight;
+}
+
+</script>
+
+</body>
+</html>
