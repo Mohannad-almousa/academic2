@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en-us">
+
 <head>
   <meta charset="utf-8" />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -8,13 +9,47 @@
   <!-- Unity Template Files -->
   <link rel="shortcut icon" href="TemplateData/favicon.ico" />
   <link rel="stylesheet" href="TemplateData/style.css" />
+
+  <!-- Canvas & Layout Styling -->
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      height: 100vh;
+      overflow-x: hidden;
+    }
+
+    #unity-container {
+      width: 100%;
+      max-width: 1100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    #unity-canvas {
+      width: 100% !important;
+      height: 700px !important;
+      background: #000;
+      border-radius: 10px;
+    }
+
+    #unity-footer {
+      margin-top: 10px;
+    }
+  </style>
 </head>
 
 <body>
 
   <!-- Unity Game Container -->
   <div id="unity-container" class="unity-desktop">
-    <canvas id="unity-canvas" width="100%" height="100%" tabindex="-1"></canvas>
+    <canvas id="unity-canvas" tabindex="-1"></canvas>
 
     <div id="unity-loading-bar">
       <div id="unity-logo"></div>
@@ -34,7 +69,6 @@
 
   <!-- UNITY INITIALIZATION SCRIPT -->
   <script>
-    var container = document.querySelector("#unity-container");
     var canvas = document.querySelector("#unity-canvas");
     var loadingBar = document.querySelector("#unity-loading-bar");
     var progressBarFull = document.querySelector("#unity-progress-bar-full");
@@ -42,21 +76,14 @@
     var warningBanner = document.querySelector("#unity-warning");
 
     function unityShowBanner(msg, type) {
-      function updateBannerVisibility() {
-        warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
-      }
-      var div = document.createElement('div');
+      var div = document.createElement("div");
       div.innerHTML = msg;
       warningBanner.appendChild(div);
-      if (type == 'error') div.style = 'background: red; padding: 10px;';
+      if (type == "error") div.style = "background: red; padding: 10px;";
       else {
-        if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
-        setTimeout(function () {
-          warningBanner.removeChild(div);
-          updateBannerVisibility();
-        }, 5000);
+        div.style = "background: yellow; padding: 10px;";
+        setTimeout(() => warningBanner.removeChild(div), 5000);
       }
-      updateBannerVisibility();
     }
 
     var buildUrl = "Build";
@@ -81,32 +108,42 @@
     script.onload = () => {
       createUnityInstance(canvas, config, (progress) => {
         progressBarFull.style.width = 100 * progress + "%";
-      })
-        .then((unityInstance) => {
-          loadingBar.style.display = "none";
-          fullscreenButton.onclick = () => {
-            unityInstance.SetFullscreen(1);
-          };
-        })
-        .catch((message) => {
-          alert(message);
-        });
+      }).then((unityInstance) => {
+        loadingBar.style.display = "none";
+        fullscreenButton.onclick = () => {
+          unityInstance.SetFullscreen(1);
+        };
+      }).catch((message) => {
+        alert(message);
+      });
     };
 
     document.body.appendChild(script);
   </script>
 
-  <!-- ------------------------------- -->
-  <!-- PHASE 2 + 3: UNITY → JS → FIREBASE -->
-  <!-- ------------------------------- -->
+  <!-- RECEIVE DATA FROM UNITY (BRIDGE) -->
+  <script>
+    window.receiveLessonData = function (lessonID, score, errors, timeSpent) {
+      console.log("🟢 Unity → Web Data Received");
+      console.log("Lesson:", lessonID);
+      console.log("Score:", score);
+      console.log("Errors:", errors);
+      console.log("Time Spent:", timeSpent);
 
-  <!-- Firebase Import -->
+      // Call Firebase save function
+      saveProgressToFirebase(lessonID, score, errors, timeSpent);
+    };
+  </script>
+
+  <!-- FIREBASE INTEGRATION -->
   <script type="module">
-    // --- Firebase SDKs ---
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
-    // --- YOUR FIREBASE CONFIG ---
+    // -----------------------------
+    // YOUR FIREBASE CONFIG
+    // -----------------------------
     const firebaseConfig = {
       apiKey: "AIzaSyBS6WZ13DKVvbdddE-azZrI2FuBrSe39u0",
       authDomain: "login-1aba2.firebaseapp.com",
@@ -119,28 +156,37 @@
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    const auth = getAuth(app);
 
-    // ------------ UNITY BRIDGE FUNCTION ------------
-    window.receiveLessonData = async function (lessonID, score, errors, timeSpent) {
+    // -----------------------------
+    // SAVE SESSION TO FIREBASE
+    // -----------------------------
+    window.saveProgressToFirebase = async function (lessonID, score, errors, timeSpent) {
+      const user = auth.currentUser;
 
-      console.log("🟢 Data received from Unity!");
-      console.log("Lesson ID:", lessonID);
-      console.log("Score:", score);
-      console.log("Errors:", errors);
-      console.log("Time Spent:", timeSpent);
+      if (!user) {
+        console.error("❌ No logged user — cannot save session!");
+        alert("You must be logged in before playing.");
+        return;
+      }
 
       try {
-        await addDoc(collection(db, "userProgress"), {
-          lessonID: lessonID,
-          score: score,
-          errors: errors,
-          timeSpent: timeSpent,
-          timestamp: new Date(),
+        const docRef = await addDoc(collection(db, "Session"), {
+          student_id: user.uid,
+          lesson_id: lessonID,
+          score: Number(score),
+          error_count: Number(errors),
+          duration_sec: Number(timeSpent),
+          device: "WebGL_Browser",
+          started_at: serverTimestamp(),
+          ended_at: serverTimestamp()
         });
 
-        console.log("🔥 Saved successfully to Firebase!");
+        console.log("✅ Session saved with ID:", docRef.id);
+        alert("✔ Lesson Completed! Score saved.");
+
       } catch (e) {
-        console.error("❌ Error saving to Firebase:", e);
+        console.error("❌ Error saving session:", e);
       }
     };
   </script>
