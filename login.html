@@ -10,12 +10,12 @@
 
 <body class="auth-body">
 
-  <div class="auth-shell"> <!--هاي عبارة عن كونتينر كبير فيه جهتين: يسار: معلومات وتسويق.    -->
+  <div class="auth-shell">
+    
     <!-- LEFT SIDE -->
     <aside class="auth-left">
       <div class="auth-left-top">
         <div class="auth-logo-mini">Research Quest</div>
-        
       </div>
 
       <div class="auth-left-center">
@@ -33,7 +33,7 @@
       </div>
     </aside>
 
-    <!--يمين: فورم الدخول.  RIGHT SIDE (Form)  -->        
+    <!-- RIGHT SIDE -->
     <main class="auth-right">
 
       <div class="auth-header-top">
@@ -43,13 +43,13 @@
         </div>
 
         <div class="auth-tabs">
-          <a href="register.html" class="auth-tab">Sign Up</a>  <!-- هاض لينك بنقلني لصفحة انشاء حساب -->>
-          <span class="auth-tab-active">Log In</span>           <!--هاي سبان مش لينك لانه صفحة اللوج ان مفعله-->
+          <a href="register.html" class="auth-tab">Sign Up</a>
+          <span class="auth-tab-active">Log In</span>
         </div>
       </div>
 
-      <form class="login_form">  <!--فورم تسجيل الدخول-->
-        <div class="input_box">  <!--حقل الإيميل-->
+      <form class="login_form">
+        <div class="input_box">
           <i class="fa-solid fa-envelope"></i>
           <input type="text" id="email" placeholder="Your e-mail">
         </div>
@@ -60,17 +60,17 @@
         </div>
 
         <div class="remember_forget_box">
-          <a href="ForgotPassword.html" id="forgotLink">Forgot Password?</a><!--رابط ينقل المستخدم لصفحة إعادة تعيين كلمة المرور.-->
+          <a href="ForgotPassword.html" id="forgotLink">Forgot Password?</a>
         </div>
 
-        <button type="button" class="login_btn">Log In</button><!--زر تسجيل الدخول-->
+        <button type="button" class="login_btn">Log In</button>
 
         <p class="register">
           Don't have an account?
-          <a href="register.html">Create one</a>  <!--رابط إنشاء حساب جديد-->
+          <a href="register.html">Create one</a>
         </p>
 
-        <div class="message_box"></div><!--نستخدمه لإظهار رسائل الخطأ أو النجاح -->
+        <div class="message_box"></div>
       </form>
 
     </main>
@@ -81,6 +81,14 @@
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+
+    import {
+      getFirestore,
+      doc,
+      updateDoc,
+      setDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBS6WZ13DKVvbdddE-azZrI2FuBrSe39u0",
@@ -93,34 +101,52 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
 
-    const btn = document.querySelector(".login_btn");  //(زر اللوج ان)بختار العنصر الي فيه كلاس login_btn.  
-    const message = document.querySelector(".message_box"); 
-    btn.addEventListener("click", (event) => {    //إضافة حدث عند الضغط على الزر (التسجيل الدخول)
-      event.preventDefault();                    //بعطل وظيفة الزر
+    const btn = document.querySelector(".login_btn");
+    const message = document.querySelector(".message_box");
 
-      const email = document.getElementById("email").value.trim();   //بختار العنصر الي فيه Id=emil(نجيب انبوت عن طريق الid )
+    btn.addEventListener("click", (event) => {
+      event.preventDefault();
 
+      const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value.trim();
 
-      message.style.display = "none";             //خفي الرسالة في البداية
-      message.classList.remove("error", "created");  //نشيل أي كلاس error أو created (عشان ما يضل لون او ستايل من محاولة سابقة)
+      message.style.display = "none";
+      message.classList.remove("error", "created");
 
-      if (!email || !password) {            // إذا كان الإيميل أو الباسورد فاضيين، عرض رسالة الخطأ وإيقاف الكود
-        message.textContent = "Please fill all fields!"; 
+      if (!email || !password) {
+        message.textContent = "Please fill all fields!";
         message.classList.add("error");
         message.style.display = "block";
         return;
       }
 
       signInWithEmailAndPassword(auth, email, password)
-        .then(() => {
+        .then(async () => {
+          const user = auth.currentUser;
+          const userRef = doc(db, "users", user.uid);
+
+          try {
+            // تحديث إذا الوثيقة موجودة
+            await updateDoc(userRef, {
+              lastLogin: serverTimestamp()
+            });
+          } catch (err) {
+            // إنشاء الوثيقة إذا لم تكن موجودة
+            await setDoc(userRef, {
+              email: user.email,
+              createdAt: serverTimestamp(),
+              lastLogin: serverTimestamp()
+            });
+          }
+
           message.textContent = "Login successful!";
           message.classList.add("created");
           message.style.display = "block";
 
           setTimeout(() => {
-            window.location.href = "home.html";  
+            window.location.href = "home.html";
           }, 800);
         })
         .catch((error) => {
