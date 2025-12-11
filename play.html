@@ -1,16 +1,13 @@
 <!DOCTYPE html>
 <html lang="en-us">
-
 <head>
   <meta charset="utf-8" />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <title>Research Quest Game</title>
 
-  <!-- Unity Template Files -->
   <link rel="shortcut icon" href="TemplateData/favicon.ico" />
   <link rel="stylesheet" href="TemplateData/style.css" />
 
-  <!-- Canvas & Layout Styling -->
   <style>
     body {
       margin: 0;
@@ -46,8 +43,6 @@
 </head>
 
 <body>
-
-  <!-- Unity Game Container -->
   <div id="unity-container" class="unity-desktop">
     <canvas id="unity-canvas" tabindex="-1"></canvas>
 
@@ -67,7 +62,7 @@
     </div>
   </div>
 
-  <!-- UNITY INITIALIZATION SCRIPT -->
+  <!-- UNITY LOADER -->
   <script>
     var canvas = document.querySelector("#unity-canvas");
     var loadingBar = document.querySelector("#unity-loading-bar");
@@ -110,15 +105,20 @@
         progressBarFull.style.width = 100 * progress + "%";
       }).then((unityInstance) => {
         loadingBar.style.display = "none";
-        fullscreenButton.onclick = () => {
-          unityInstance.SetFullscreen(1);
-        };
-      }).catch((message) => {
-        alert(message);
-      });
+        fullscreenButton.onclick = () => { unityInstance.SetFullscreen(1); };
+        window.unityInstance = unityInstance;
+      }).catch((message) => { alert(message); });
     };
 
     document.body.appendChild(script);
+
+    document.addEventListener('click', () => {
+      if (window.unityInstance && window.unityInstance.Module.audioContext) {
+        if (window.unityInstance.Module.audioContext.state === 'suspended') {
+          window.unityInstance.Module.audioContext.resume();
+        }
+      }
+    }, { once: true });
   </script>
 
   <!-- RECEIVE DATA FROM UNITY -->
@@ -130,25 +130,17 @@
       console.log("Errors:", errors);
       console.log("Time Spent:", timeSpent);
 
+      // حفظ السكور
       saveProgressToFirebase(lessonID, score, errors, timeSpent);
     };
   </script>
 
   <!-- FIREBASE INTEGRATION -->
   <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
 
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { 
-      getFirestore, 
-      doc, 
-      setDoc 
-    } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
-
-    import { 
-      getAuth 
-    } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-
-    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyBS6WZ13DKVvbdddE-azZrI2FuBrSe39u0",
       authDomain: "login-1aba2.firebaseapp.com",
@@ -158,18 +150,29 @@
       appId: "1:393759404087:web:9581fde1afb9ca81decfb2"
     };
 
-    // Init Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    // SAVE PROGRESS TO FIREBASE
-    window.saveProgressToFirebase = async function (lessonID, score, errors, timeSpent) {
+    // ⚡ المتغير العالمي للمستخدم
+    window.currentUser = null;
 
-      const user = auth.currentUser;
+    // تحقق من تسجيل الدخول عند فتح الصفحة
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+      } else {
+        window.currentUser = user;
+      }
+    });
+
+    // حفظ التقدم
+    window.saveProgressToFirebase = async function (lessonID, score, errors, timeSpent) {
+      const user = window.currentUser;
 
       if (!user) {
-        alert("You must be logged in to save your progress!");
+        console.warn("User not logged in yet! Retrying in 0.5s...");
+        setTimeout(() => saveProgressToFirebase(lessonID, score, errors, timeSpent), 500);
         return;
       }
 
@@ -177,16 +180,17 @@
 
       try {
         await setDoc(progressRef, {
-          [lessonID]: {
-            score: Number(score),
-            errors: Number(errors),
-            timeSpent: Number(timeSpent),
-            updatedAt: new Date()
-          }
-        }, { merge: true });
+  name: user.displayName || user.email,  // <-- السطر الجديد الذي يخزن الاسم
+  [lessonID]: {
+    score: Number(score),
+    errors: Number(errors),
+    timeSpent: Number(timeSpent),
+    updatedAt: new Date()
+  }
+}, { merge: true });
+
 
         console.log("✅ Progress saved to Firestore!");
-
       } catch (error) {
         console.error("❌ Error saving progress:", error);
       }
@@ -195,3 +199,4 @@
 
 </body>
 </html>
+
