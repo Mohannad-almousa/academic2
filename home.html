@@ -30,9 +30,10 @@
       <div class="card hero">
 
         <div class="hero-text">
-          <h1>WELCOME
+          <h1 id="heroWelcome">WELCOME
             <span>To Research Quest Platform</span>
           </h1>
+
 
           <p>
             Master scientific research concepts through interactive Unity-based modules
@@ -174,49 +175,90 @@
 
 
   <!-- Firebase Auth -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+<!-- Firebase Auth -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyBS6WZ13DKVvbdddE-azZrI2FuBrSe39u0",
-      authDomain: "login-1aba2.firebaseapp.com",
-      projectId: "login-1aba2",
-      storageBucket: "login-1aba2.appspot.com",
-      messagingSenderId: "393759404087",
-      appId: "1:393759404087:web:9581fde1afb9ca81decfb2"
-    };
+  // ✅ نوت: استيراد Firestore لجلب الاسم من قاعدة البيانات
+  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+  const firebaseConfig = {
+    apiKey: "AIzaSyBS6WZ13DKVvbdddE-azZrI2FuBrSe39u0",
+    authDomain: "login-1aba2.firebaseapp.com",
+    projectId: "login-1aba2",
+    storageBucket: "login-1aba2.appspot.com",
+    messagingSenderId: "393759404087",
+    appId: "1:393759404087:web:9581fde1afb9ca81decfb2"
+  };
 
-    const userChip = document.getElementById("userChip");
-    const btnLogout = document.getElementById("btnLogout");
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
 
-    onAuthStateChanged(auth, (user) => {
-      if (!user) window.location.href = "login.html";
-      else userChip.textContent = user.email;
-    });
+  // ✅ نوت: تهيئة Firestore
+  const db = getFirestore(app);
 
-    btnLogout.onclick = async () => {
-      await signOut(auth);
+  // ✅ نوت: عناصر الصفحة
+  const userChip = document.getElementById("userChip"); // Navbar أعلى يمين
+  const heroWelcome = document.getElementById("heroWelcome"); // الهيرو
+  const btnLogout = document.getElementById("btnLogout");
+  window.currentUser = null; // <-- خزّن المستخدم الحالي عالمياً+++++++++++++++++++
+
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
       window.location.href = "login.html";
-    };
+    } else {
+      // ✅ نوت: جلب بيانات المستخدم من Firestore
+      window.currentUser = user; // <-- الآن كل صفحة تعرف أن المستخدم مسجل دخول++++++++++++++++
 
-    // ⭐ زر "ابدأ"
-    document.getElementById("btnStart").onclick = () => {
-      window.location.href = "modules.html";
-    };
+      const docRef = doc(db, "users", user.uid);
+      const docSnap = await getDoc(docRef);
 
-    // ⭐ زر "العب الآن"
-    document.getElementById("btnPlay").onclick = () => {
-      window.location.href = "play.html";  // ✔ صحيح الآن
-    };
+      if (docSnap.exists()) {
+        const userData = docSnap.data();
 
-    document.getElementById("btnGetStarted").onclick = () => {
-      window.location.href = "modules.html";
-    };
-  </script>
+        // ✅ نوت: عرض الاسم فقط في Navbar (بدون كلمة WELCOME)
+        userChip.textContent = userData.name;
+
+        // ✅ نوت: عرض الاسم مع كلمة WELCOME في الهيرو
+        heroWelcome.innerHTML = `WELCOME, ${userData.name} <span>To Research Quest Platform</span>`;
+      } else {
+        // ✅ نوت: fallback إذا ما فيه بيانات
+        userChip.textContent = "";
+        heroWelcome.innerHTML = `WELCOME <span>To Research Quest Platform</span>`;
+      }
+    }
+  });
+
+  // زر Logout
+  btnLogout.onclick = async () => {
+    await signOut(auth);
+    window.location.href = "login.html";
+  };
+
+  // ⭐ زر "ابدأ"
+  document.getElementById("btnStart").onclick = () => {
+    window.location.href = "modules.html";
+  };
+
+  // ⭐ زر "العب الآن"
+ document.getElementById("btnPlay").addEventListener("click", function() {
+    if (!window.currentUser) {
+        alert("You must be logged in to play!");
+        return;
+    }
+    window.location.href = "http://127.0.0.1:5500/new%20project/play.html"; // تأكد من رابط لعبتك الصحيح+++++++++++++
+});
+
+
+  // ⭐ زر "Get Started"
+  document.getElementById("btnGetStarted").onclick = () => {
+    window.location.href = "modules.html";
+  };
+</script>
+
+
 
 </body>
 </html>
